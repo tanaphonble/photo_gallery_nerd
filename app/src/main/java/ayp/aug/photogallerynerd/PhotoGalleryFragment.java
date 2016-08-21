@@ -1,5 +1,6 @@
 package ayp.aug.photogallerynerd;
 
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -48,7 +49,10 @@ public class PhotoGalleryFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_photo_gallery, container, false);
 
-        mGridLayoutManager = new GridLayoutManager(getActivity(), 3);
+        Resources r = getResources();
+        int gridSpanSize = r.getInteger(R.integer.grid_span_size);
+
+        mGridLayoutManager = new GridLayoutManager(getActivity(), gridSpanSize);
 
         mRecyclerView = (RecyclerView) v.findViewById(R.id.fragment_photo_gallery_recycle_view);
         mRecyclerView.setLayoutManager(mGridLayoutManager);

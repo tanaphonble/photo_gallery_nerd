@@ -3,6 +3,9 @@ package ayp.aug.photogallerynerd;
 import android.net.Uri;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +26,28 @@ public class FlickrFetchr {
     private static final String TAG = "FlickrFetchr";
     private static final String API_KEY = "6778e513a221969a621392769f02b2a1";
 
+    /**
+     * parse JSON Using GSON
+     *
+     * @param jsonBody
+     */
+    private void parseItemsV2(List<GalleryItem> items, JSONObject jsonBody)
+            throws IOException, JSONException {
+
+        String jsonString = jsonBody.toString();
+
+        Gson gson = new GsonBuilder().create();
+        Flickr flickr = gson.fromJson(jsonString, Flickr.class);
+        for (Photo p : flickr.photos.photo) {
+            GalleryItem item = new GalleryItem();
+            item.setId(p.id);
+            item.setCaption(p.title);
+            if (p.url_s == null)
+                continue;
+            item.setUrl(p.url_s);
+            items.add(item);
+        }
+    }
 
     private void parseItems(List<GalleryItem> items, JSONObject jsonBody)
             throws IOException, JSONException {
@@ -63,7 +88,8 @@ public class FlickrFetchr {
             String jsonString = getUrlString(url);
             Log.i(TAG, "Received JSON: " + jsonString);
             JSONObject jsonBody = new JSONObject(jsonString);
-            parseItems(items, jsonBody);
+//            parseItems(items, jsonBody);
+            parseItemsV2(items, jsonBody);
         } catch (JSONException je) {
             Log.e(TAG, "Failed to parse JSON", je);
         } catch (IOException ioe) {

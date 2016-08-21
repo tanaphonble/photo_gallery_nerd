@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +18,18 @@ import java.util.List;
 /**
  * Created by Tanaphon on 8/20/2016.
  */
-public class PhotoGalleryFragment extends Fragment{
+public class PhotoGalleryFragment extends Fragment {
 
     private static final String TAG = "PhotoGalleryFragment";
 
     private RecyclerView mRecyclerView;
     private List<GalleryItem> mItems = new ArrayList<>();
+    private boolean loading = true;
+    private int pastVisibleItem;
+    private int visibleItemCount;
+    private int totalItemCount;
+
+    private GridLayoutManager mGridLayoutManager;
 
     public static PhotoGalleryFragment newInstance() {
         return new PhotoGalleryFragment();
@@ -41,8 +48,31 @@ public class PhotoGalleryFragment extends Fragment{
                              @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_photo_gallery, container, false);
 
+        mGridLayoutManager = new GridLayoutManager(getActivity(), 3);
+
         mRecyclerView = (RecyclerView) v.findViewById(R.id.fragment_photo_gallery_recycle_view);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+        mRecyclerView.setLayoutManager(mGridLayoutManager);
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0) {
+                    visibleItemCount = mGridLayoutManager.getChildCount();
+                    totalItemCount = mGridLayoutManager.getItemCount();
+                    pastVisibleItem = mGridLayoutManager.findFirstVisibleItemPosition();
+
+                    Log.i(TAG,"pastVisibleItem: " + pastVisibleItem+ ", visibleItemCount: " + visibleItemCount + ", totalItemCount: " + totalItemCount);
+                    if (loading && (visibleItemCount + pastVisibleItem) >= totalItemCount) {
+                        loading = false;
+                        Log.i(TAG, "Last Item Now");
+                        /*
+                            Fetch new pages here
+                            and do something with loading boolean
+                         */
+                    }
+                }
+            }
+        });
 
         setAdapter();
 
@@ -50,7 +80,7 @@ public class PhotoGalleryFragment extends Fragment{
     }
 
     private void setAdapter() {
-        if(isAdded()){
+        if (isAdded()) {
             mRecyclerView.setAdapter(new PhotoAdapter(mItems));
         }
     }
@@ -63,13 +93,13 @@ public class PhotoGalleryFragment extends Fragment{
             mTitleTextView = (TextView) itemView;
         }
 
-        public void bindGalleryItem(GalleryItem item){
+        public void bindGalleryItem(GalleryItem item) {
             mTitleTextView.setText(item.toString());
         }
 
     }
 
-    private class PhotoAdapter extends RecyclerView.Adapter<PhotoHolder>{
+    private class PhotoAdapter extends RecyclerView.Adapter<PhotoHolder> {
 
         private List<GalleryItem> mGalleryItems;
 

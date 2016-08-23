@@ -37,6 +37,8 @@ public class ThumbnailDownloader<T> extends HandlerThread {
         mResponseHandler = responseHandler;
     }
 
+
+
     @Override
     protected void onLooperPrepared() {
         mRequestHandler = new Handler() {
@@ -47,6 +49,7 @@ public class ThumbnailDownloader<T> extends HandlerThread {
                     Log.i(TAG, "Got a request for URL: " + mRequestMap.get(target));
                     handleRequest(target);
                 }
+
             }
         };
     }

@@ -1,5 +1,6 @@
 package ayp.aug.photogallerynerd;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -19,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
@@ -84,6 +86,10 @@ public class PhotoGalleryFragment extends Fragment {
             public boolean onQueryTextSubmit(String query) {
                 QueryPreferences.setStoredQuery(getActivity(), query);
                 updateItems();
+                InputMethodManager imm = (InputMethodManager)
+                        getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+                searchView.onActionViewCollapsed();
                 return true;
             }
 

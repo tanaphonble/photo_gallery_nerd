@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentMap;
 
 /**
  * Created by Tanaphon on 8/21/2016.
+ * Handle download process
  */
 public class ThumbnailDownloader<T> extends HandlerThread {
     private static final String TAG = "ThumbnailDownloader";
@@ -37,8 +38,6 @@ public class ThumbnailDownloader<T> extends HandlerThread {
         mResponseHandler = responseHandler;
     }
 
-
-
     @Override
     protected void onLooperPrepared() {
         mRequestHandler = new Handler() {
@@ -49,9 +48,9 @@ public class ThumbnailDownloader<T> extends HandlerThread {
                     Log.i(TAG, "Got a request for URL: " + mRequestMap.get(target));
                     handleRequest(target);
                 }
-
             }
         };
+
     }
 
     public void clearQueue() {
@@ -72,9 +71,10 @@ public class ThumbnailDownloader<T> extends HandlerThread {
             mResponseHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (mRequestMap.get(target) != url)
+                    if (mRequestMap.get(target) != url) {
+                        Log.d(TAG, "run: target != url // url -> " + url + " get map -> " + mRequestMap.get(target));
                         return;
-
+                    }
                     mRequestMap.remove(target);
                     mThumbnailDownloadListener.onThumbnailDownload(target, bitmap);
                 }
@@ -94,6 +94,5 @@ public class ThumbnailDownloader<T> extends HandlerThread {
             mRequestHandler.obtainMessage(MESSAGE_DOWNLOAD, target)
                     .sendToTarget();
         }
-
     }
 }

@@ -46,6 +46,8 @@ public class PollService extends IntentService {
             );
         else
             alarmManager.cancel(pi);
+
+        QueryPreferences.setAlarmOn(context, isOn);
     }
 
     public static boolean isServiceAlarmOn(Context context) {

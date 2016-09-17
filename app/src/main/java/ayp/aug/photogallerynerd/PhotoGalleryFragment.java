@@ -14,6 +14,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -194,7 +195,8 @@ public class PhotoGalleryFragment extends VisibleFragment {
     }
 
     private class PhotoHolder extends RecyclerView.ViewHolder implements
-            View.OnClickListener {
+            View.OnCreateContextMenuListener,
+            MenuItem.OnMenuItemClickListener {
         private ImageView mItemImageView;
         private GalleryItem mGalleryItem;
 
@@ -202,10 +204,10 @@ public class PhotoGalleryFragment extends VisibleFragment {
             super(itemView);
             mItemImageView = (ImageView) itemView
                     .findViewById(R.id.fragment_photo_gallery_image_view);
-            itemView.setOnClickListener(this);
+            itemView.setOnCreateContextMenuListener(this);
         }
 
-        public void bindGalleryItem(GalleryItem galleryItem){
+        public void bindGalleryItem(GalleryItem galleryItem) {
             mGalleryItem = galleryItem;
         }
 
@@ -214,9 +216,29 @@ public class PhotoGalleryFragment extends VisibleFragment {
         }
 
         @Override
-        public void onClick(View v) {
-            Intent i = new Intent(Intent.ACTION_VIEW, mGalleryItem.getPhotoPageUri());
-            startActivity(i);
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            menu.setHeaderTitle("Choose one");
+            MenuItem menuItem1 = menu.add(0, 1, 0, "External browser");
+            menuItem1.setOnMenuItemClickListener(this);
+            MenuItem menuItem2 = menu.add(0, 2, 0, "In app browser");
+            menuItem2.setOnMenuItemClickListener(this);
+        }
+
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            switch (item.getItemId()) {
+                case 1:
+                    Intent i1 = new Intent(Intent.ACTION_VIEW, mGalleryItem.getPhotoPageUri());
+                    startActivity(i1);
+                    return true;
+                case 2:
+                    Intent i2 = PhotoPageActivity.newIntent(getActivity(),
+                            mGalleryItem.getPhotoPageUri());
+                    startActivity(i2);
+                    return true;
+                default:
+            }
+            return false;
         }
     }
 

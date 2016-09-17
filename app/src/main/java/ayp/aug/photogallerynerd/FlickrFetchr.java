@@ -57,6 +57,7 @@ public class FlickrFetchr {
             if (p.url_s == null)
                 continue;
             item.setUrl(p.url_s);
+            item.setOwner(p.owner);
             items.add(item);
         }
     }

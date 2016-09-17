@@ -22,6 +22,8 @@ public class PollService extends IntentService {
     private static final String TAG = "PollService";
     private static final long POLL_INTERVAL = 1000 * 60;// 60secs
 //    private static final long POLL_INTERVAL = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
+    public static final String ACTION_SHOW_NOTIFICATION = "photogallery.SHOW_NOTIFICATION";
+
 
     public static Intent newIntent(Context context) {
         return new Intent(context, PollService.class);
@@ -97,6 +99,8 @@ public class PollService extends IntentService {
             NotificationManagerCompat notificationManagerCompat =
                     NotificationManagerCompat.from(this);
             notificationManagerCompat.notify(0, notification);
+
+            sendBroadcast(new Intent(ACTION_SHOW_NOTIFICATION));
         }
         QueryPreferences.setLastResultId(this, resultId);
 
